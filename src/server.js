@@ -14,8 +14,14 @@ export const start = async () => {
   const rootSchema = `
     type Cat {
       name: String
-      age: Int
-      bestFriend: Cat
+      age: Int!
+      bestFriend: Cat!
+    }
+
+    input CatInput {
+      name: String
+      age: Int!
+      bestFriend: Cat!
     }
 
     type Query {
@@ -24,7 +30,7 @@ export const start = async () => {
     }
 
     type Mutation {
-      newCat(input: Input): NewCat!
+      newCat(input: catInput!): Cat!
     }
 
     schema {
