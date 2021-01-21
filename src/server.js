@@ -12,20 +12,54 @@ const types = ['product', 'coupon', 'user']
 
 export const start = async () => {
   const rootSchema = `
+    type Cat {
+      name: String
+      age: Int
+      bestFriend: Cat
+    }
+
+    type Query {
+      myCat: Cat
+      hello: String
+    }
+
+    type Mutation {
+      newCat(input: Input): NewCat!
+    }
+
     schema {
       query: Query
-      mutation: Mutation
     }
   `
   const schemaTypes = await Promise.all(types.map(loadTypeSchema))
 
   const server = new ApolloServer({
-    typeDefs: [rootSchema, ...schemaTypes],
-    resolvers: merge({}, product, coupon, user),
-    async context({ req }) {
-      const user = await authenticate(req)
-      return { user }
+    // eslint-disable-next-line spaced-comment
+    typeDefs: [rootSchema /*, ...schemaTypes*/],
+    resolvers: {
+      Query: {
+        myCat() {
+          return {
+            name: 'Garfield',
+            bestFriend: {
+              name: 'Tony',
+              bestFriend: {}
+            }
+          }
+        },
+        hello() {
+          return 'hello'
+        }
+      }
+    },
+    context({ req }) {
+      return { user: null }
     }
+    // resolvers: merge({}, product, coupon, user),
+    // async context({ req }) {
+    //   const user = await authenticate(req)
+    //   return { user }
+    // }
   })
 
   await connect(config.dbUrl)
